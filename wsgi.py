@@ -32,8 +32,10 @@ user_cli = AppGroup('user', help='User object commands')
 @user_cli.command("create", help="Creates a user")
 @click.argument("username", default="rob")
 @click.argument("password", default="robpass")
-def create_user_command(username, password):
-    create_user(username, password)
+@click.argument("first_name")
+@click.argument("last_name")
+def create_user_command(username, password, first_name, last_name):
+    create_user(username, password, first_name, last_name)
     print(f'{username} created!')
 
 # this command will be : flask user create bob bobpass
