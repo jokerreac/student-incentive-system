@@ -98,6 +98,8 @@ def init():
         target_hours=50
     )
     ]
+    for accolade in accolades:
+        db.session.add(accolade)
 
     db.session.commit()
     print('database intialized')
