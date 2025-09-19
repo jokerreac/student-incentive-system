@@ -2,7 +2,7 @@ import click, pytest, sys
 from flask.cli import with_appcontext, AppGroup
 
 from App.database import db, get_migrate
-from App.models import User
+from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, StudentAccolade
 from App.main import create_app
 from App.controllers import ( create_user, get_all_users_json, get_all_users, initialize )
 
@@ -16,6 +16,90 @@ migrate = get_migrate(app)
 @app.cli.command("init", help="Creates and initializes the database")
 def init():
     initialize()
+
+    # Adds sample student data
+    students = [
+    Student(
+        username="alice123",
+        password="alicepass",
+        first_name="Alice",
+        last_name="Johnson"
+    ),
+    Student(
+        username="bob_the_builder",
+        password="bobpass",
+        first_name="Bob",
+        last_name="Smith"
+    ),
+    Student(
+        username="charlie2025",
+        password="charliepass",
+        first_name="Charlie",
+        last_name="Brown"
+    ),
+    Student(
+        username="diana_p",
+        password="dianapass",
+        first_name="Diana",
+        last_name="Prince"
+    ),
+    Student(
+        username="edward99",
+        password="edwardpass",
+        first_name="Edward",
+        last_name="Norton"
+    )
+    ]
+    for user in students:
+        db.session.add(user)
+
+    # Adds sample staff data
+    staff = [
+        Staff(
+        username="fiona_admin",
+        password="fionapass",
+        first_name="Fiona",
+        last_name="Gallagher"
+    ),
+    Staff(
+        username="george_dcit",
+        password="georgepass",
+        first_name="George",
+        last_name="Michaels"
+    )
+    ]
+    for user in staff:
+        db.session.add(user)
+
+    # Adds sample service data
+    services = [
+    Service(name="Beach Cleanup"),
+    Service(name="Library Volunteering"),
+    Service(name="Study Help Desk")
+    ]
+    for service in services:
+        db.session.add(service)
+
+    # Adds sample accolade data
+    accolades = [
+    Accolade(
+        title="Helping Hand",
+        description="Awarded for completing 10 hours of volunteer service",
+        target_hours=10
+    ),
+    Accolade(
+        title="Community Builder",
+        description="Awarded for completing 25 hours of volunteer service",
+        target_hours=25
+    ),
+    Accolade(
+        title="Impact Maker",
+        description="Awarded for completing 50 hours of volunteer service",
+        target_hours=50
+    )
+    ]
+
+    db.session.commit()
     print('database intialized')
 
 '''
