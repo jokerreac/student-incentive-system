@@ -4,7 +4,8 @@ from flask.cli import with_appcontext, AppGroup
 from App.database import db, get_migrate
 from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, StudentAccolade
 from App.main import create_app
-from App.controllers import ( create_user, get_all_users_json, get_all_users, initialize )
+from App.controllers import ( initialize )
+from App.utils.display import ( display_table )
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -107,50 +108,39 @@ def init():
 '''
 User Commands
 '''
+@app.cli.command("list-all-users", help="Displays User table")
+def list_all_users():
+    users = User.query.all()
+    display_table(users, ["id", "username", "password" ,"first_name", "last_name"], "User Table")
 
-# Commands can be organized using groups
+@app.cli.command("list-students", help="Displays Student table")
+def list_students():
+    students = Student.query.all()
+    display_table(students, ["id", "username", "password" ,"first_name", "last_name"], "Student Table")
 
-# create a group, it would be the first argument of the comand
-# eg : flask user <command>
-user_cli = AppGroup('user', help='User object commands')
+@app.cli.command("list-staff", help="Displays Staff table")
+def list_staff():
+    staff = Staff.query.all()
+    display_table(staff, ["id", "username", "password" ,"first_name", "last_name"], "Staff Table")
 
-# Then define the command and any parameters and annotate it with the group (@)
-@user_cli.command("create", help="Creates a user")
-@click.argument("username", default="rob")
-@click.argument("password", default="robpass")
-@click.argument("first_name")
-@click.argument("last_name")
-def create_user_command(username, password, first_name, last_name):
-    create_user(username, password, first_name, last_name)
-    print(f'{username} created!')
+@app.cli.command("list-services", help="Displays Service Table")
+def list_services():
+    services = Service.query.all()
+    display_table(services, ["id", "name"], "Service Table")
 
-# this command will be : flask user create bob bobpass
-
-@user_cli.command("list", help="Lists users in the database")
-@click.argument("format", default="string")
-def list_user_command(format):
-    if format == 'string':
-        print(get_all_users())
-    else:
-        print(get_all_users_json())
-
-app.cli.add_command(user_cli) # add the group to the cli
-
-'''
-Test Commands
-'''
-
-test = AppGroup('test', help='Testing commands') 
-
-@test.command("user", help="Run User tests")
-@click.argument("type", default="all")
-def user_tests_command(type):
-    if type == "unit":
-        sys.exit(pytest.main(["-k", "UserUnitTests"]))
-    elif type == "int":
-        sys.exit(pytest.main(["-k", "UserIntegrationTests"]))
-    else:
-        sys.exit(pytest.main(["-k", "App"]))
+@app.cli.command("list-accolades", help="Displays Accolade table")
+def list_accolades():
+    accolades = Accolade.query.all()
+    display_table(accolades, ["id", "title", "description", "target_hours"], "Accolade Table")
     
+@app.cli.command("list-service-records", help="Displays ServiceRecord table")
+def list_service_records():
+    service_records = ServiceRecord.query.all()
+    display_table(service_records,
+                  ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "processed_date"], "ServiceRecord Table")
+    
+@app.cli.command("list-student-accolades", help="Displays StudentAccolade Table")
+def list_student_accolade():
+    student_accolades = StudentAccolade.query.all()
+    display_table(student_accolades, ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
 
-app.cli.add_command(test)
