@@ -6,7 +6,13 @@ class Accolade(db.Model):
     description = db.Column(db.String(100), nullable=False)
     target_hours = db.Column(db.Integer, unique=True, nullable=False)
 
+
     def __init__(self, title, description, target_hours):
         self.title = title
         self.description = description
         self.target_hours = target_hours
+
+
+    def list():
+        return Accolade.query.all()
+        

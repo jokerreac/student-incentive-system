@@ -12,3 +12,7 @@ class StudentAccolade(db.Model):
         self.accolade_id = accolade_id
         self.date_earned = date_earned
     
+
+    def list():
+        return StudentAccolade.query.all()
+        

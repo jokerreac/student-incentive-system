@@ -1,6 +1,6 @@
 from App.database import db
 from .user import User
-from .service_record import ServiceRecord
+from App.utils.display import display_table
 
 class Student(User):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -8,4 +8,9 @@ class Student(User):
     accolades = db.relationship('Accolade', secondary='student_accolade', backref=db.backref('students', lazy=True))
 
 
+    def list():
+        return Student.query.all()
+        
     
+    def get_by_id(id):
+        return Student.query.get(id)

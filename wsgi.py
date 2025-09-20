@@ -5,7 +5,8 @@ from App.database import db, get_migrate
 from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, StudentAccolade
 from App.main import create_app
 from App.controllers import ( initialize )
-from App.utils.display import ( display_table )
+from App.utils.display import *
+from App.utils.cli_helper import *
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -108,39 +109,66 @@ def init():
 '''
 User Commands
 '''
-@app.cli.command("list-all-users", help="Displays User table")
+# List commands to aid marker in testing
+
+@app.cli.command("show-user-table", help="Displays User table")
 def list_all_users():
-    users = User.query.all()
-    display_table(users, ["id", "username", "password" ,"first_name", "last_name"], "User Table")
+     display_table(User.list(), ["id", "username", "password" ,"first_name", "last_name"], "User Table")
 
-@app.cli.command("list-students", help="Displays Student table")
+@app.cli.command("show-student-table", help="Displays Student table")
 def list_students():
-    students = Student.query.all()
-    display_table(students, ["id", "username", "password" ,"first_name", "last_name"], "Student Table")
+    display_table(Student.list(), ["id", "username", "password" ,"first_name", "last_name"], "Student Table")
 
-@app.cli.command("list-staff", help="Displays Staff table")
+@app.cli.command("show-staff-table", help="Displays Staff table")
 def list_staff():
-    staff = Staff.query.all()
-    display_table(staff, ["id", "username", "password" ,"first_name", "last_name"], "Staff Table")
+    display_table(Staff.list(), ["id", "username", "password" ,"first_name", "last_name"], "Staff Table")
 
-@app.cli.command("list-services", help="Displays Service Table")
+@app.cli.command("show-service-table", help="Displays Service Table")
 def list_services():
-    services = Service.query.all()
-    display_table(services, ["id", "name"], "Service Table")
+    display_table(Service.list(), ["id", "name"], "Service Table")
 
-@app.cli.command("list-accolades", help="Displays Accolade table")
+@app.cli.command("show-accolade-table", help="Displays Accolade table")
 def list_accolades():
-    accolades = Accolade.query.all()
-    display_table(accolades, ["id", "title", "description", "target_hours"], "Accolade Table")
+    display_table(Accolade.list(), ["id", "title", "description", "target_hours"], "Accolade Table")
     
-@app.cli.command("list-service-records", help="Displays ServiceRecord table")
+@app.cli.command("show-servicerecord-table", help="Displays ServiceRecord table")
 def list_service_records():
-    service_records = ServiceRecord.query.all()
-    display_table(service_records,
-                  ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "processed_date"], "ServiceRecord Table")
-    
-@app.cli.command("list-student-accolades", help="Displays StudentAccolade Table")
-def list_student_accolade():
-    student_accolades = StudentAccolade.query.all()
-    display_table(student_accolades, ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
+    display_table(ServiceRecord.list(),
+          ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "status", "processed_date"], "ServiceRecord Table")
 
+@app.cli.command("show-studentaccolade-table", help="Displays StudentAccolade Table")
+def list_student_accolade():
+    display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
+
+
+
+
+@app.cli.command("request-service-log")
+def request_service_log():
+    print(f"\n======== REQUEST SERVICE LOG MENU ========")
+
+    if not display_users("Student", Student.list()):
+        return
+    
+    student = prompt_for_id("Student", Student.get_by_id)
+
+    if not display_users("Staff", Staff.list()):
+        return
+    
+    staff_member = prompt_for_id("Staff", Staff.get_by_id)
+
+    if not display_services(Service.list()):
+        return
+    
+    service = prompt_for_id("Service", Service.get_by_id)
+
+    print("\n")
+    while True:
+        num_hours = input(f"Enter hours of service for [{student.first_name} {student.last_name} - {service.name}]: ")
+        if num_hours.isdigit() and int(num_hours) > 0:
+            print("\n")
+            break
+        else:
+            print("Invalid input. Please enter a positive integer.\n")
+
+    ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
