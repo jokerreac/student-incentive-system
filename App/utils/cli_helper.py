@@ -6,4 +6,4 @@ def prompt_for_id(type, get_by_id_func):
             if obj is not None:
                 return obj
             else:
-                print(f"\nSelection does not exist. Please enter a valid {type} ID.")
+                print(f"Selection does not exist. Please enter a valid {type} ID.\n")

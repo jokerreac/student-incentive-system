@@ -19,7 +19,6 @@ def display_table(objects, columns, title=None):
 
 
 def display_users(type, users):
-    print("\n")
     print(f"{f'{type} ID':<15} {'Name':<20}")
     print("-" * 40)
 
@@ -34,7 +33,6 @@ def display_users(type, users):
 
 
 def display_services(services):
-    print("\n")
     print(f"{'Service ID':<15} {'Name':<20}")
     print("-" * 40)
 
@@ -46,8 +44,8 @@ def display_services(services):
         print(f"{s.id:<15} {s.name:<20}")
     return True
 
+
 def display_pending(service_records):
-    print("\n")
     print(f"{'Record ID':<15} {'Student':<20} {'Service':<30} {'Hours':<10} {'Request Date':<16} {'Status':<16}")
     print("-" * 105)
 

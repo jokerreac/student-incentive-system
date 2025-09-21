@@ -144,38 +144,44 @@ def list_student_accolade():
 @app.cli.command("request-service-log")
 def request_service_log():
     print(f"\n======== REQUEST SERVICE LOG MENU ========")
+    print("\n")
 
     if not display_users("Student", Student.list()):
         return
-    
+    print("\n")
+
     student = prompt_for_id("Student", Student.get_by_id)
+    print("\n")
 
     if not display_users("Staff", Staff.list()):
         return
+    print("\n")
     
     staff_member = prompt_for_id("Staff", Staff.get_by_id)
+    print("\n")
 
     if not display_services(Service.list()):
         return
+    print("\n")
     
     service = prompt_for_id("Service", Service.get_by_id)
-
     print("\n")
+
     while True:
         num_hours = input(f"Enter hours of service for [{student.first_name} {student.last_name} - {service.name}]: ")
         if num_hours.isdigit() and int(num_hours) > 0:
-            print("\n")
             break
         else:
             print("Invalid input. Please enter a positive integer.\n")
 
     ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
-    print("Service Record Created!")
+    print("\nService Record Created!")
 
 
 @app.cli.command("process-service-request")
 def process_service_request():
     print(f"\n======== PROCESS SERVICE REQUEST MENU ========")
+    print("\n")
 
     if not display_users("Staff", Staff.list()):
         return
@@ -183,7 +189,7 @@ def process_service_request():
     print("\n")
     staff_member = prompt_for_id("Staff", Staff.get_by_id)
 
-    print(f"\nService Requests Awaiting Approval - [{staff_member.first_name} {staff_member.last_name}]")
+    print(f"\nService Requests Awaiting Approval - [{staff_member.first_name} {staff_member.last_name}]\n")
     if not display_pending(ServiceRecord.list_pending_by_staff_id(staff_member.id)):
         return
 
@@ -196,17 +202,20 @@ def process_service_request():
             print(f"\nSelection does not exist. Please enter a valid Record ID.")
 
     student_name = f"{service_record.student.first_name} {service_record.student.last_name}"
-    action = input(f"\nApprove request ({service_record.id}) [{student_name} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
-
+    
     while True:
+        action = input(f"\nApprove request ({service_record.id}) [{student_name} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
+        
         if action == "a":
             ServiceRecord.process_service_request(service_record, "Approved")
             break
-        if action == "d":
+        elif action == "d":
             ServiceRecord.process_service_request(service_record, "Denied")
             break
-        if action == "c":
+        elif action == "c":
             print("\nOperation cancelled. Exiting application...")
             return
+        else:
+            print("Invalid input. Please choose from the provided options.")
 
-    print(f"\nSuccessfully Processed Request ({service_record.id}) - {service_record.status}!")
+

@@ -1,6 +1,5 @@
 from App.database import db
 from .user import User
-from App.utils.display import display_table
 
 class Staff(User):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
