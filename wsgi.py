@@ -141,8 +141,6 @@ def list_student_accolade():
     display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
 
 
-
-
 @app.cli.command("request-service-log")
 def request_service_log():
     print(f"\n======== REQUEST SERVICE LOG MENU ========")
@@ -172,3 +170,43 @@ def request_service_log():
             print("Invalid input. Please enter a positive integer.\n")
 
     ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
+    print("Service Record Created!")
+
+
+@app.cli.command("process-service-request")
+def process_service_request():
+    print(f"\n======== PROCESS SERVICE REQUEST MENU ========")
+
+    if not display_users("Staff", Staff.list()):
+        return
+    
+    print("\n")
+    staff_member = prompt_for_id("Staff", Staff.get_by_id)
+
+    print(f"\nService Requests Awaiting Approval - [{staff_member.first_name} {staff_member.last_name}]")
+    if not display_pending(ServiceRecord.list_pending_by_staff_id(staff_member.id)):
+        return
+
+    print("\n")
+    while True:
+        service_record = prompt_for_id("Record", ServiceRecord.get_by_id)
+        if service_record.staff.id == staff_member.id:
+            break
+        else:
+            print(f"\nSelection does not exist. Please enter a valid Record ID.")
+
+    student_name = f"{service_record.student.first_name} {service_record.student.last_name}"
+    action = input(f"\nApprove request ({service_record.id}) [{student_name} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
+
+    while True:
+        if action == "a":
+            ServiceRecord.process_service_request(service_record, "Approved")
+            break
+        if action == "d":
+            ServiceRecord.process_service_request(service_record, "Denied")
+            break
+        if action == "c":
+            print("\nOperation cancelled. Exiting application...")
+            return
+
+    print(f"\nSuccessfully Processed Request ({service_record.id}) - {service_record.status}!")

@@ -28,30 +28,24 @@ class ServiceRecord(db.Model):
         return ServiceRecord.query.all()
     
     
+    def get_by_id(id):
+        return ServiceRecord.query.get(id)
+
+
     def create_service_record(student_id, staff_id, service_id, num_hours):
         db.session.add(ServiceRecord(student_id, staff_id, service_id, num_hours))
         db.session.commit()
-        print("Service Record Created!")
 
 
-    """def list_pending_filtered(staff_id):
-        from .staff import Staff
-        from .student import Student
-        from .service import Service
+    def process_service_request(service_record, action):
+        service_record.status = action
+        service_record.processed_date = date.today()
+        db.session.add(service_record)
+        db.session.commit()
 
-        staff_name = f"{Staff.query.get(staff_id).first_name} {Staff.query.get(staff_id).last_name}"
-        print(f"Service Requests Awaiting Approval - [{staff_name}]\n")
-        print(f"{'Record ID':<15} {'Student':<20} {'Service':<30} {'Hours':<10} {'Request Date':<16} {'Status':<16}")
-        print("-" * 105)
+    
+    def list_pending_by_staff_id(id):
+        return ServiceRecord.query.filter_by(staff_id=id, status="Pending").all()
+    
 
-        service_requests = ServiceRecord.query.filter_by(staff_id=staff_id, status="Pending").all()
-        if not service_requests:
-            return False
 
-        for r in service_requests:
-            student_name = f"{Student.query.get(r.student_id).first_name} {Student.query.get(r.student_id).last_name}"
-            service_name = f"{Service.query.get(r.service_id).name}"
-            request_date = r.request_date.strftime('%Y-%m-%d')
-
-            print(f"{r.id:<15} {student_name:<20} {service_name:<30} {r.num_hours:<10} {request_date:<16} {r.status:<16}")
-        return True"""

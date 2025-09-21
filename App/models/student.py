@@ -4,8 +4,8 @@ from App.utils.display import display_table
 
 class Student(User):
     id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    services = db.relationship('Service', secondary='service_record', backref=db.backref('students', lazy=True))
-    accolades = db.relationship('Accolade', secondary='student_accolade', backref=db.backref('students', lazy=True))
+    records = db.relationship('ServiceRecord', backref=db.backref('student', lazy=True), foreign_keys='ServiceRecord.student_id')
+    accolades = db.relationship('StudentAccolade', backref=db.backref('student', lazy=True), foreign_keys='StudentAccolade.student_id')
 
 
     def list():
