@@ -222,7 +222,7 @@ def process_service_request():
     print("\n")
     while True:
         service_record = prompt_for_id("Record", ServiceRecord.get_by_id)
-        if service_record.staff.id == staff_member.id:
+        if service_record.staff.id == staff_member.id and service_record.status == "Pending":
             break
         else:
             print(f"\nSelection does not exist. Please enter a valid Record ID.")
@@ -247,7 +247,22 @@ def process_service_request():
 
 @app.cli.command("view-leaderboard")
 def view_leaderboard():
-    leaderboard = Student.list_student_hours()
-    display_leaderboard(leaderboard)
+    display_leaderboard(Student.list_student_hours())
 
 
+@app.cli.command("view-accolades")
+def view_accolades():
+    print(f"\n======== VIEW ACCOLADES MENU ========")
+    print("\n")
+
+    if not display_users("Student", Student.list()):
+        return
+    print("\n")
+
+    student = prompt_for_id("Student", Student.get_by_id)
+    student_name = f"{student.first_name} {student.last_name}"
+    print(f"\nDisplaying Accolades for {student_name}: \n")
+
+    if not display_accolades(student.accolades):
+        print(f"{student_name} has not earned any Accolades.")
+        return

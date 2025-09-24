@@ -78,3 +78,22 @@ def display_leaderboard(leaderboard):
         print(f"{rank:<10} {student_name:<30} {hours:<10}")
     
     return True
+
+
+def display_accolades(accolade_records):
+    print(f"\n{'Date Earned':<16} {'Accolade':<25} {'Description':<48}")
+    print("-" * 100)
+
+    if not accolade_records:
+        return False
+
+    for record in accolade_records:
+        accolade = record.accolade
+        date_earned = record.date_earned.strftime('%Y-%m-%d')
+
+        print(f"{date_earned:<16} {accolade.title:<25} {accolade.description:<48}")
+
+    return True
+
+
+    
