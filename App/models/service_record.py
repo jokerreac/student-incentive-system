@@ -32,8 +32,11 @@ class ServiceRecord(db.Model):
 
 
     def create_service_record(student_id, staff_id, service_id, num_hours):
-        db.session.add(ServiceRecord(student_id, staff_id, service_id, num_hours))
+        new_service_record = ServiceRecord(student_id, staff_id, service_id, num_hours)
+        db.session.add(new_service_record)
         db.session.commit()
+        print("\nService Record Created!")
+        return new_service_record
 
 
     def process_service_request(service_record, action):

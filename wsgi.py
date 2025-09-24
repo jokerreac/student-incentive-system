@@ -141,6 +141,38 @@ def list_student_accolade():
     display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
 
 
+@app.cli.command("log-student-hours")
+def log_student_hours():
+    print(f"\n======== LOG STUDENT HOURS MENU ========")
+    print("\n")
+
+    if not display_users("Staff", Staff.list()):
+        return
+    print("\n")
+    
+    staff_member = prompt_for_id("Staff", Staff.get_by_id)
+    print("\n")
+
+    if not display_users("Student", Student.list()):
+        return
+    print("\n")
+
+    student = prompt_for_id("Student", Student.get_by_id)
+    print("\n")
+
+    if not display_services(Service.list()):
+        return
+    print("\n")
+    
+    service = prompt_for_id("Service", Service.get_by_id)
+    print("\n")
+
+    num_hours = prompt_for_hours(student, service)
+
+    service_record = ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
+    ServiceRecord.process_service_request(service_record, "Approved")
+
+
 @app.cli.command("request-service-log")
 def request_service_log():
     print(f"\n======== REQUEST SERVICE LOG MENU ========")
@@ -167,15 +199,10 @@ def request_service_log():
     service = prompt_for_id("Service", Service.get_by_id)
     print("\n")
 
-    while True:
-        num_hours = input(f"Enter hours of service for [{student.first_name} {student.last_name} - {service.name}]: ")
-        if num_hours.isdigit() and int(num_hours) > 0:
-            break
-        else:
-            print("Invalid input. Please enter a positive integer.\n")
-
+    num_hours = prompt_for_hours(student, service)
+    
     ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
-    print("\nService Record Created!")
+    
 
 
 @app.cli.command("process-service-request")
