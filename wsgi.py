@@ -204,7 +204,6 @@ def request_service_log():
     ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
     
 
-
 @app.cli.command("process-service-request")
 def process_service_request():
     print(f"\n======== PROCESS SERVICE REQUEST MENU ========")
@@ -244,5 +243,11 @@ def process_service_request():
             return
         else:
             print("Invalid input. Please choose from the provided options.")
+
+
+@app.cli.command("view-leaderboard")
+def view_leaderboard():
+    leaderboard = Student.list_student_hours()
+    display_leaderboard(leaderboard)
 
 
