@@ -9,7 +9,7 @@ A Staff and Student system for recording hours of community service/volunteering
 - Staff can log completed service hours for students  
 - Students can request confirmation of completed service hours  
 - Staff can approve or deny pending service requests  
-- Student/Staff can view student leaderboard sorted by total approved hours  
+- Students/Staff can view student leaderboard sorted by total approved hours  
 - Students can view accolades earned for milestone hours (10/25/50+ hours)
 
 ---
