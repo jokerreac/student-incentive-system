@@ -26,12 +26,23 @@ class User(db.Model):
         return check_password_hash(self.password, password)
     
 
+    def list(): 
+        return User.query.all()
+
+
     def get_name(self):
         return f"{self.first_name} {self.last_name}"
     
 
-    def list():
-       return User.query.all()
-       
+    def view_leaderboard():
+        from .student import Student        
+        students = Student.list()
+        leaderboard = []
+        
+        for s in students:
+            leaderboard.append({"student" : s, "hours" : s.calc_total_hours()})
+        
+        return sorted(leaderboard, key=lambda x: x["hours"], reverse=True)
+        
 
 

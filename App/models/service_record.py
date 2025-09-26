@@ -27,25 +27,13 @@ class ServiceRecord(db.Model):
         else:
             self.processed_date = None
 
+
     def list():
         return ServiceRecord.query.all()
     
     
     def get_by_id(id):
         return ServiceRecord.query.get(id)
-
-    
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-
-
-    def process_service_request(self, action):
-        self.status = action
-        self.processed_date = date.today()
-        self.save()
-        return self
 
     
     def list_pending_by_staff_id(id):

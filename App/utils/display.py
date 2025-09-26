@@ -24,7 +24,6 @@ def display_users(type, users):
     print("-" * 40)
 
     if not users:
-        print("No data to display.\n")
         return False
     
     for u in users:
@@ -37,7 +36,6 @@ def display_services(services):
     print("-" * 40)
 
     if not services:
-        print("No data to display.\n")
         return False
 
     for s in services:
@@ -65,7 +63,6 @@ def display_leaderboard(leaderboard):
     print("-" * 55)
 
     if not leaderboard:
-        print("No data to display. Exiting application...")
         return False
     
     rank = 0

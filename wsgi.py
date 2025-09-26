@@ -5,8 +5,9 @@ from App.database import db, get_migrate
 from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, AccoladeRecord
 from App.main import create_app
 from App.controllers import ( initialize )
+# Cli helpers
 from App.utils.display import *
-from App.utils.cli_helper import *
+from App.utils.prompt import *
 
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -21,36 +22,36 @@ def init():
 
     # Adds sample student data
     students = [
-    Student(
-        username="alice123",
-        password="alicepass",
-        first_name="Alice",
-        last_name="Johnson"
-    ),
-    Student(
-        username="bob_the_builder",
-        password="bobpass",
-        first_name="Bob",
-        last_name="Smith"
-    ),
-    Student(
-        username="charlie2025",
-        password="charliepass",
-        first_name="Charlie",
-        last_name="Brown"
-    ),
-    Student(
-        username="diana_p",
-        password="dianapass",
-        first_name="Diana",
-        last_name="Prince"
-    ),
-    Student(
-        username="edward99",
-        password="edwardpass",
-        first_name="Edward",
-        last_name="Norton"
-    )
+        Student(
+            username="alice123",
+            password="alicepass",
+            first_name="Alice",
+            last_name="Johnson"
+        ),
+        Student(
+            username="bob_the_builder",
+            password="bobpass",
+            first_name="Bob",
+            last_name="Smith"
+        ),
+        Student(
+            username="charlie2025",
+            password="charliepass",
+            first_name="Charlie",
+            last_name="Brown"
+        ),
+        Student(
+            username="diana_p",
+            password="dianapass",
+            first_name="Diana",
+            last_name="Prince"
+        ),
+        Student(
+            username="edward99",
+            password="edwardpass",
+            first_name="Edward",
+            last_name="Norton"
+        )
     ]
     for user in students:
         db.session.add(user)
@@ -58,47 +59,59 @@ def init():
     # Adds sample staff data
     staff = [
         Staff(
-        username="fiona_admin",
-        password="fionapass",
-        first_name="Fiona",
-        last_name="Gallagher"
-    ),
-    Staff(
-        username="george_dcit",
-        password="georgepass",
-        first_name="George",
-        last_name="Michaels"
-    )
+            username="fiona_admin",
+            password="fionapass",
+            first_name="Fiona",
+            last_name="Gallagher"
+        ),
+        Staff(
+            username="george_dcit",
+            password="georgepass",
+            first_name="George",
+            last_name="Michaels"
+        )
     ]
     for user in staff:
         db.session.add(user)
 
     # Adds sample service data
     services = [
-    Service(name="Beach Cleanup"),
-    Service(name="Library Volunteering"),
-    Service(name="Study Help Desk")
+        Service(name="Study Help Desk"),
+        Service(name="Lab Tech Support"),
+        Service(name="Library Assistance"),
+        Service(name="Orientation Helper"),
+        Service(name="Student Club Support")
     ]
     for service in services:
         db.session.add(service)
 
     # Adds sample accolade data
     accolades = [
-    Accolade(
-        title="Helping Hand",
-        description="Awarded for completing 10 hours of volunteer service",
-        target_hours=10
-    ),
-    Accolade(
-        title="Community Builder",
-        description="Awarded for completing 25 hours of volunteer service",
-        target_hours=25
-    ),
-    Accolade(
-        title="Impact Maker",
-        description="Awarded for completing 50 hours of volunteer service",
-        target_hours=50
-    )
+        Accolade(
+            title="Helping Hand",
+            description="Awarded for completing 10 hours of volunteer service",
+            target_hours=10
+        ),
+        Accolade(
+            title="Community Builder",
+            description="Awarded for completing 25 hours of volunteer service",
+            target_hours=25
+        ),
+        Accolade(
+            title="Impact Maker",
+            description="Awarded for completing 50 hours of volunteer service",
+            target_hours=50
+        ),
+        Accolade(
+            title="Service Champion",
+            description="Awarded for completing 75 hours of volunteer service",
+            target_hours=75
+        ),
+        Accolade(
+            title="Volunteer Legend",
+            description="Awarded for completing 100 hours of volunteer service",
+            target_hours=100
+        )
     ]
     for accolade in accolades:
         db.session.add(accolade)
@@ -107,45 +120,52 @@ def init():
     print('database intialized')
 
 '''
-User Commands
+List commands to aid marker in checking tables
 '''
-# List commands to aid marker in testing
 
-@app.cli.command("show-user-table", help="Displays User table")
+@app.cli.command("list-users", help="Displays User table")
 def list_all_users():
-     display_table(User.list(), ["id", "username", "password" ,"first_name", "last_name"], "User Table")
+    if not display_table(User.list(), ["id", "username", "password" ,"first_name", "last_name"], "User Table"):
+        print("\nThere are currently no records in [User]\n")
 
-@app.cli.command("show-student-table", help="Displays Student table")
+@app.cli.command("list-students", help="Displays Student table")
 def list_students():
-    display_table(Student.list(), ["id", "username", "password" ,"first_name", "last_name"], "Student Table")
+    if not display_table(Student.list(), ["id", "username", "password" ,"first_name", "last_name"], "Student Table"):
+        print("\nThere are currently no records in [Student]\n")
 
-@app.cli.command("show-staff-table", help="Displays Staff table")
+@app.cli.command("list-staff", help="Displays Staff table")
 def list_staff():
-    display_table(Staff.list(), ["id", "username", "password" ,"first_name", "last_name"], "Staff Table")
+    if not display_table(Staff.list(), ["id", "username", "password" ,"first_name", "last_name"], "Staff Table"):
+        print("\nThere are currently no records in [Staff]\n")
 
-@app.cli.command("show-service-table", help="Displays Service Table")
+@app.cli.command("list-services", help="Displays Service Table")
 def list_services():
     if not display_table(Service.list(), ["id", "name"], "Service Table"):
         print("\nThere are currently no records in [Service]\n")
 
-@app.cli.command("show-accolade-table", help="Displays Accolade table")
+@app.cli.command("list-accolades", help="Displays Accolade table")
 def list_accolades():
-    display_table(Accolade.list(), ["id", "title", "description", "target_hours"], "Accolade Table")
+    if not display_table(Accolade.list(), ["id", "title", "description", "target_hours"], "Accolade Table"):
+        print("\nThere are currently no records in [Accolade]\n")
     
-@app.cli.command("show-servicerecord-table", help="Displays ServiceRecord table")
+@app.cli.command("list-service-records", help="Displays ServiceRecord table")
 def list_service_records():
     if not display_table(ServiceRecord.list(),
           ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "status", "processed_date"], "ServiceRecord Table"):
         print("\nThere are currently no records in [ServiceRecord]\n")
 
-@app.cli.command("show-accoladerecord-table", help="Displays AccoladeRecord Table")
+@app.cli.command("list-accolade-records", help="Displays AccoladeRecord Table")
 def list_accolade_record():
     if not display_table(AccoladeRecord.list(), ["student_id", "accolade_id", "date_earned"], "AccoladeRecord Table"):
         print("\nThere are currently no records in [AccoladeRecord]\n")
 
-@app.cli.command("log-service-hours")
+'''
+User commands
+'''
+
+@app.cli.command("log-service-hours", help="Log completed service hours for a student (staff only).")
 def log_student_hours():
-    print(f"\n======== LOG STUDENT HOURS MENU ========")
+    print(f"\n======== LOG SERVICE HOURS MENU ========")
     print("\n")
 
     if not display_users("Staff", Staff.list()):
@@ -171,14 +191,14 @@ def log_student_hours():
 
     num_hours = prompt_for_hours(student, service)
 
-    service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours, "Approved").save()
+    service_record = staff_member.log_service_hours(student.id, service.id, num_hours)
     print(f"\nService Record Created! (ID: {service_record.id})\n")
 
-    accolade_records = AccoladeRecord.award_accolades(service_record.student)
+    accolade_records = student.award_accolades()
     display_accolade_unlocked(accolade_records)
 
 
-@app.cli.command("request-service-log")
+@app.cli.command("request-service-log", help="Request confirmation of completed service hours (student only).")
 def request_service_log():
     print(f"\n======== REQUEST SERVICE LOG MENU ========")
     print("\n")
@@ -206,11 +226,11 @@ def request_service_log():
 
     num_hours = prompt_for_hours(student, service)
     
-    service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours).save()
+    service_record = student.request_service_log(staff_member.id, service.id, num_hours)
     print(f"\nService Request Created! (ID: {service_record.id})\n")
 
 
-@app.cli.command("process-log-request")
+@app.cli.command("process-service-request", help="Approve or deny pending service requests (staff only).")
 def process_service_request():
     print(f"\n======== PROCESS SERVICE REQUEST MENU ========")
     print("\n")
@@ -239,10 +259,10 @@ def process_service_request():
         action = input(f"\nApprove request ({service_record.id}) [{service_record.student.get_name()} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
         
         if action == "a":
-            service_record.process_service_request("Approved")
+            staff_member.process_service_request(service_record, "Approved")
             break
         elif action == "d":
-            service_record.process_service_request("Denied")
+            staff_member.process_service_request(service_record, "Denied")
             break
         elif action == "c":
             print("\nOperation cancelled. Exiting application...")
@@ -252,17 +272,17 @@ def process_service_request():
 
     print(f"\nSuccessfully Processed Request (ID: {service_record.id}) - {service_record.status}!\n")
 
-    accolade_records = AccoladeRecord.award_accolades(service_record.student)
+    accolade_records = service_record.student.award_accolades()
     display_accolade_unlocked(accolade_records)
 
 
-@app.cli.command("view-leaderboard")
+@app.cli.command("view-leaderboard", help="View student leaderboard sorted by total approved hours (all users).")
 def view_leaderboard():
     print("\nDisplaying leaderboard:\n")
-    display_leaderboard(Student.list_hours_sorted())
+    display_leaderboard(User.view_leaderboard())
 
 
-@app.cli.command("view-accolades")
+@app.cli.command("view-accolades", help="View accolades earned by a student (student only).")
 def view_accolades():
     print(f"\n======== VIEW ACCOLADES MENU ========")
     print("\n")
@@ -276,6 +296,6 @@ def view_accolades():
 
     print(f"\n\nDisplaying Accolades for [{student_name}]:")
 
-    if not display_accolades(student.accolades):
+    if not display_accolades(student.view_accolades()):
         print(f"{student_name} has not earned any Accolades yet.")
         return

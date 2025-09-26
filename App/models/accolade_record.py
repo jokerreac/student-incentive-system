@@ -1,5 +1,4 @@
 from App.database import db
-from .accolade import Accolade
 from datetime import date
 
 class AccoladeRecord(db.Model):
@@ -17,19 +16,7 @@ class AccoladeRecord(db.Model):
 
     def list():
         return AccoladeRecord.query.all()
-
     
-    def award_accolades(student):
-        accolades = Accolade.list()
-        total_hours = student.calc_total_hours()
-        new_accolades_records = []
 
-        for accolade in accolades:
-            if not AccoladeRecord.query.filter_by(student_id=student.id, accolade_id=accolade.id).all() and total_hours >= accolade.target_hours:
-               new_accolade_record = AccoladeRecord(student.id, accolade.id)
-               db.session.add(new_accolade_record)
-               new_accolades_records.append(new_accolade_record)
-
-        if new_accolades_records:        
-            db.session.commit()
-            return new_accolades_records
+    def get_by_id(student_id, accolade_id):
+        return AccoladeRecord.query.get((student_id, accolade_id))
