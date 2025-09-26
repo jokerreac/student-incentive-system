@@ -13,14 +13,22 @@ class Student(User):
     
     def get_by_id(id):
         return Student.query.get(id)
+    
+
+    def calc_total_hours(self):
+        total_hours = 0
+        for r in self.records:
+            if r.status == "Approved":
+                total_hours += int(r.num_hours)
+        
+        return total_hours
 
 
-    def list_student_hours():
-        from .service_record import ServiceRecord
+    def list_hours_sorted():
         students = Student.list()
         leaderboard = []
         
         for s in students:
-            leaderboard.append({"student" : s, "hours" : ServiceRecord.calc_total_student_hours(s.id)})
+            leaderboard.append({"student" : s, "hours" : s.calc_total_hours()})
         
         return sorted(leaderboard, key=lambda x: x["hours"], reverse=True)

@@ -1,5 +1,4 @@
 from App.database import db
-from App.utils.display import display_table
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)

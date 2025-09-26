@@ -1,4 +1,5 @@
 from App.database import db
+from .accolade import Accolade
 from datetime import date
 
 class StudentAccolade(db.Model):
@@ -18,15 +19,17 @@ class StudentAccolade(db.Model):
         return StudentAccolade.query.all()
 
     
-    def award_accolades(student, total_hours):
-        from .accolade import Accolade
-
+    def award_accolades(student):
         accolades = Accolade.list()
-        student_name = f"{student.first_name} {student.last_name}"
+        total_hours = student.calc_total_hours()
+        new_accolades_records = []
 
         for accolade in accolades:
             if not StudentAccolade.query.filter_by(student_id=student.id, accolade_id=accolade.id).all() and total_hours >= accolade.target_hours:
-               db.session.add(StudentAccolade(student.id, accolade.id))
-               print(f"[Accolade Unlocked] {student_name} just earned {accolade.title} - {accolade.target_hours} hours of service!")
+               new_accolade_record = StudentAccolade(student.id, accolade.id)
+               db.session.add(new_accolade_record)
+               new_accolades_records.append(new_accolade_record)
 
-        db.session.commit()
+        if new_accolades_records:        
+            db.session.commit()
+            return new_accolades_records

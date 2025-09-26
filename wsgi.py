@@ -125,7 +125,8 @@ def list_staff():
 
 @app.cli.command("show-service-table", help="Displays Service Table")
 def list_services():
-    display_table(Service.list(), ["id", "name"], "Service Table")
+    if not display_table(Service.list(), ["id", "name"], "Service Table"):
+        print("\nThere are currently no records in [Service]\n")
 
 @app.cli.command("show-accolade-table", help="Displays Accolade table")
 def list_accolades():
@@ -133,15 +134,16 @@ def list_accolades():
     
 @app.cli.command("show-servicerecord-table", help="Displays ServiceRecord table")
 def list_service_records():
-    display_table(ServiceRecord.list(),
-          ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "status", "processed_date"], "ServiceRecord Table")
+    if not display_table(ServiceRecord.list(),
+          ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "status", "processed_date"], "ServiceRecord Table"):
+        print("\nThere are currently no records in [ServiceRecord]\n")
 
 @app.cli.command("show-studentaccolade-table", help="Displays StudentAccolade Table")
 def list_student_accolade():
-    display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table")
+    if not display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table"):
+        print("\nThere are currently no records in [StudentAccolade]\n")
 
-
-@app.cli.command("log-student-hours")
+@app.cli.command("log-service-hours")
 def log_student_hours():
     print(f"\n======== LOG STUDENT HOURS MENU ========")
     print("\n")
@@ -169,8 +171,11 @@ def log_student_hours():
 
     num_hours = prompt_for_hours(student, service)
 
-    service_record = ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
-    ServiceRecord.process_service_request(service_record, "Approved")
+    service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours, "Approved").save()
+    print(f"\nService Record Created! (ID: {service_record.id})\n")
+
+    accolade_records = StudentAccolade.award_accolades(service_record.student)
+    display_accolade_unlocked(accolade_records)
 
 
 @app.cli.command("request-service-log")
@@ -201,10 +206,11 @@ def request_service_log():
 
     num_hours = prompt_for_hours(student, service)
     
-    ServiceRecord.create_service_record(student.id, staff_member.id, service.id, num_hours)
-    
+    service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours).save()
+    print(f"\nService Record Created! (ID: {service_record.id})\n")
 
-@app.cli.command("process-service-request")
+
+@app.cli.command("process-log-request")
 def process_service_request():
     print(f"\n======== PROCESS SERVICE REQUEST MENU ========")
     print("\n")
@@ -214,9 +220,11 @@ def process_service_request():
     
     print("\n")
     staff_member = prompt_for_id("Staff", Staff.get_by_id)
+    staff_name = staff_member.get_name()
 
-    print(f"\nService Requests Awaiting Approval - [{staff_member.first_name} {staff_member.last_name}]\n")
+    print(f"\n\nService Requests awaiting action for [{staff_name}]:\n")
     if not display_pending(ServiceRecord.list_pending_by_staff_id(staff_member.id)):
+        print(f"{staff_name} has no requests at the moment.")
         return
 
     print("\n")
@@ -227,16 +235,14 @@ def process_service_request():
         else:
             print(f"\nSelection does not exist. Please enter a valid Record ID.")
 
-    student_name = f"{service_record.student.first_name} {service_record.student.last_name}"
-    
     while True:
-        action = input(f"\nApprove request ({service_record.id}) [{student_name} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
+        action = input(f"\nApprove request ({service_record.id}) [{service_record.student.get_name()} - {service_record.service.name} - {service_record.num_hours}.0 Hours] ? (a = approve, d = deny, c = cancel): ")
         
         if action == "a":
-            ServiceRecord.process_service_request(service_record, "Approved")
+            service_record.process_service_request("Approved")
             break
         elif action == "d":
-            ServiceRecord.process_service_request(service_record, "Denied")
+            service_record.process_service_request("Denied")
             break
         elif action == "c":
             print("\nOperation cancelled. Exiting application...")
@@ -244,10 +250,16 @@ def process_service_request():
         else:
             print("Invalid input. Please choose from the provided options.")
 
+    print(f"\nSuccessfully Processed Request (ID: {service_record.id}) - {service_record.status}!\n")
+
+    accolade_records = StudentAccolade.award_accolades(service_record.student)
+    display_accolade_unlocked(accolade_records)
+
 
 @app.cli.command("view-leaderboard")
 def view_leaderboard():
-    display_leaderboard(Student.list_student_hours())
+    print("\nDisplaying leaderboard:\n")
+    display_leaderboard(Student.list_hours_sorted())
 
 
 @app.cli.command("view-accolades")
@@ -260,9 +272,10 @@ def view_accolades():
     print("\n")
 
     student = prompt_for_id("Student", Student.get_by_id)
-    student_name = f"{student.first_name} {student.last_name}"
-    print(f"\nDisplaying Accolades for {student_name}: \n")
+    student_name = student.get_name()
+
+    print(f"\n\nDisplaying Accolades for [{student_name}]:")
 
     if not display_accolades(student.accolades):
-        print(f"{student_name} has not earned any Accolades.")
+        print(f"{student_name} has not earned any Accolades yet.")
         return

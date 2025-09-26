@@ -14,14 +14,18 @@ class ServiceRecord(db.Model):
     processed_date = db.Column(db.Date, nullable=True)
 
 
-    def __init__(self, student_id, staff_id, service_id, num_hours):
+    def __init__(self, student_id, staff_id, service_id, num_hours, status="Pending"):
         self.student_id = student_id
         self.staff_id = staff_id
         self.service_id = service_id
         self.num_hours = num_hours
         self.request_date = date.today()
-        self.processed_date = None
+        self.status = status
 
+        if status == "Approved":
+            self.processed_date = date.today()
+        else:
+            self.processed_date = None
 
     def list():
         return ServiceRecord.query.all()
@@ -30,35 +34,19 @@ class ServiceRecord(db.Model):
     def get_by_id(id):
         return ServiceRecord.query.get(id)
 
-
-    def create_service_record(student_id, staff_id, service_id, num_hours):
-        new_service_record = ServiceRecord(student_id, staff_id, service_id, num_hours)
-        db.session.add(new_service_record)
+    
+    def save(self):
+        db.session.add(self)
         db.session.commit()
-        print("\nService Record Created!")
-        return new_service_record
+        return self
 
 
-    def process_service_request(service_record, action):
-        from .student_accolade import StudentAccolade
-        service_record.status = action
-        service_record.processed_date = date.today()
-        db.session.add(service_record)
-        db.session.commit()
-        print(f"\nSuccessfully Processed Request ({service_record.id}) - {service_record.status}!\n")
-
-        total_hours = ServiceRecord.calc_total_student_hours(service_record.student_id)
-        StudentAccolade.award_accolades(service_record.student, total_hours)
+    def process_service_request(self, action):
+        self.status = action
+        self.processed_date = date.today()
+        self.save()
+        return self
 
     
     def list_pending_by_staff_id(id):
         return ServiceRecord.query.filter_by(staff_id=id, status="Pending").all()
-    
-    
-    def calc_total_student_hours(student_id):
-        approved_records = ServiceRecord.query.filter_by(student_id=student_id, status="Approved").all()
-        total_hours = 0
-        for r in approved_records:
-            total_hours += int(r.num_hours)
-        
-        return total_hours

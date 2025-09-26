@@ -7,6 +7,7 @@ class Accolade(db.Model):
     target_hours = db.Column(db.Integer, unique=True, nullable=False)
     accolades = db.relationship('StudentAccolade', backref=db.backref('accolade', lazy=True), foreign_keys='StudentAccolade.accolade_id')    
 
+
     def __init__(self, title, description, target_hours):
         self.title = title
         self.description = description

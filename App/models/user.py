@@ -1,6 +1,5 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
-from App.utils.display import display_table
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +25,11 @@ class User(db.Model):
         """Check hashed password."""
         return check_password_hash(self.password, password)
     
+
+    def get_name(self):
+        return f"{self.first_name} {self.last_name}"
     
+
     def list():
        return User.query.all()
        
