@@ -2,7 +2,7 @@ import click, pytest, sys
 from flask.cli import with_appcontext, AppGroup
 
 from App.database import db, get_migrate
-from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, StudentAccolade
+from App.models import User, Student, Staff, Service, Accolade, ServiceRecord, AccoladeRecord
 from App.main import create_app
 from App.controllers import ( initialize )
 from App.utils.display import *
@@ -138,10 +138,10 @@ def list_service_records():
           ["id", "student_id", "staff_id", "service_id", "num_hours", "request_date", "status", "processed_date"], "ServiceRecord Table"):
         print("\nThere are currently no records in [ServiceRecord]\n")
 
-@app.cli.command("show-studentaccolade-table", help="Displays StudentAccolade Table")
-def list_student_accolade():
-    if not display_table(StudentAccolade.list(), ["student_id", "accolade_id", "date_earned"], "StudentAccolade Table"):
-        print("\nThere are currently no records in [StudentAccolade]\n")
+@app.cli.command("show-accoladerecord-table", help="Displays AccoladeRecord Table")
+def list_accolade_record():
+    if not display_table(AccoladeRecord.list(), ["student_id", "accolade_id", "date_earned"], "AccoladeRecord Table"):
+        print("\nThere are currently no records in [AccoladeRecord]\n")
 
 @app.cli.command("log-service-hours")
 def log_student_hours():
@@ -174,7 +174,7 @@ def log_student_hours():
     service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours, "Approved").save()
     print(f"\nService Record Created! (ID: {service_record.id})\n")
 
-    accolade_records = StudentAccolade.award_accolades(service_record.student)
+    accolade_records = AccoladeRecord.award_accolades(service_record.student)
     display_accolade_unlocked(accolade_records)
 
 
@@ -207,7 +207,7 @@ def request_service_log():
     num_hours = prompt_for_hours(student, service)
     
     service_record = ServiceRecord(student.id, staff_member.id, service.id, num_hours).save()
-    print(f"\nService Record Created! (ID: {service_record.id})\n")
+    print(f"\nService Request Created! (ID: {service_record.id})\n")
 
 
 @app.cli.command("process-log-request")
@@ -252,7 +252,7 @@ def process_service_request():
 
     print(f"\nSuccessfully Processed Request (ID: {service_record.id}) - {service_record.status}!\n")
 
-    accolade_records = StudentAccolade.award_accolades(service_record.student)
+    accolade_records = AccoladeRecord.award_accolades(service_record.student)
     display_accolade_unlocked(accolade_records)
 
 

@@ -4,4 +4,4 @@ from .staff import *
 from .service import *
 from .accolade import *
 from .service_record import *
-from .student_accolade import *
+from .accolade_record import *
