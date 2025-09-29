@@ -34,7 +34,7 @@ class User(db.Model):
         return f"{self.first_name} {self.last_name}"
     
 
-    def view_leaderboard():
+    def get_leaderboard():
         from .student import Student        
         students = Student.list()
         leaderboard = []

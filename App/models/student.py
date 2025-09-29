@@ -38,10 +38,11 @@ class Student(User):
 
         if new_accolade_records:        
             db.session.commit()
-            return new_accolade_records
+
+        return new_accolade_records
         
     
-    def view_accolades(self):
+    def get_accolades(self):
         return self.accolades
     
 

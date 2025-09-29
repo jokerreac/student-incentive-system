@@ -279,7 +279,7 @@ def process_service_request():
 @app.cli.command("view-leaderboard", help="View student leaderboard sorted by total approved hours (all users).")
 def view_leaderboard():
     print("\nDisplaying leaderboard:\n")
-    display_leaderboard(User.view_leaderboard())
+    display_leaderboard(User.get_leaderboard())
 
 
 @app.cli.command("view-accolades", help="View accolades earned by a student (student only).")
@@ -296,6 +296,6 @@ def view_accolades():
 
     print(f"\n\nDisplaying Accolades for [{student_name}]:")
 
-    if not display_accolades(student.view_accolades()):
+    if not display_accolades(student.get_accolades()):
         print(f"{student_name} has not earned any Accolades yet.")
         return
